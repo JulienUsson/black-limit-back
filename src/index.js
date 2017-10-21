@@ -9,7 +9,7 @@ const app = Express();
 const http = Http.Server(app);
 const io = SocketIO(http);
 
-io.on('connection', socketHandler);
+io.on('connection', socketHandler(io));
 
 http.listen(config.port, () => {
   console.log(`listening on *:${config.port}`);

@@ -3,3 +3,7 @@ export const setPlayers = players => ({
   players,
 });
 
+export const gameReady = players => ({
+  type: 'TABLE_GAME_READY',
+  players,
+});
