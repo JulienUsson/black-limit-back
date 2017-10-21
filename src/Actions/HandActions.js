@@ -7,3 +7,8 @@ export const setUsername = username => ({
   type: 'HAND_SET_USERNAME',
   username,
 });
+
+export const setHand = hand => ({
+  type: 'HAND_SET_HAND',
+  hand,
+});
