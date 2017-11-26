@@ -1,39 +1,18 @@
 import UUID from 'uuid-js';
 
-import { setPlayers, gameReady } from './Actions/TableActions';
+import { setPlayers, gameReady, setQuestion } from './Actions/TableActions';
 import { setUuid, setUsername, setHand } from './Actions/HandActions';
-import Deck from './Deck';
+import { createQuestionDeck, createAnswerDeck } from './Deck';
 
 const MIN_PLAYERS = 2;
 const DRAW_SIZE = 5;
 
-let deck = null;
+let questionDeck = null;
+let answerDeck = null;
 let players = [];
 let playersCount = 1;
 let gameStarted = false;
 
-export default io => (socket) => {
-  socket.on('disconnect', () => disconnect(socket));
-
-  socket.on('dispatch', ({ type, ...params }) => {
-    switch (type) {
-      case 'HAND_STARTUP':
-        initPlayer(socket);
-        break;
-      case 'HAND_SET_USERNAME':
-        updatePlayerUsername(socket, params);
-        break;
-      case 'HAND_SET_READY':
-        updatePlayerReady(socket, params);
-        if (!gameStarted && players.length >= MIN_PLAYERS && players.every(p => p.ready)) {
-          launchGame(io);
-        }
-        break;
-      default:
-        break;
-    }
-  });
-};
 
 function disconnect(socket) {
   const { uuid } = socket;
@@ -83,12 +62,37 @@ function updatePlayerReady(socket, { ready }) {
 
 function launchGame(io) {
   gameStarted = true;
-  deck = new Deck();
+  questionDeck = createQuestionDeck();
+  answerDeck = createAnswerDeck();
   io.sockets.emit('dispatch', gameReady());
   players.forEach((player) => {
     const { socket } = player;
-    const hand = deck.draw(DRAW_SIZE);
+    const hand = answerDeck.draw(DRAW_SIZE);
     player.hand = hand;
     socket.emit('dispatch', setHand(hand));
+    socket.broadcast.emit('dispatch', setQuestion(questionDeck.draw()));
   });
 }
+
+export default io => (socket) => {
+  socket.on('disconnect', () => disconnect(socket));
+
+  socket.on('dispatch', ({ type, ...params }) => {
+    switch (type) {
+      case 'HAND_STARTUP':
+        initPlayer(socket);
+        break;
+      case 'HAND_SET_USERNAME':
+        updatePlayerUsername(socket, params);
+        break;
+      case 'HAND_SET_READY':
+        updatePlayerReady(socket, params);
+        if (!gameStarted && players.length >= MIN_PLAYERS && players.every(p => p.ready)) {
+          launchGame(io);
+        }
+        break;
+      default:
+        break;
+    }
+  });
+};

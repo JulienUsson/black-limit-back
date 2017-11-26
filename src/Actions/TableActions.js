@@ -7,3 +7,8 @@ export const gameReady = players => ({
   type: 'TABLE_GAME_READY',
   players,
 });
+
+export const setQuestion = question => ({
+  type: 'TABLE_SET_QUESTION',
+  question,
+});
