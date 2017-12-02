@@ -21,6 +21,11 @@ function disconnect(socket) {
   }
 }
 
+function initTable(socket) {
+  socket.emit('dispatch', setPlayers(players));
+  socket.emit('dispatch', setQuestion(question));
+}
+
 function initPlayer(socket) {
   if (gameStarted) {
     return;
@@ -78,6 +83,9 @@ export default io => (socket) => {
 
   socket.on('dispatch', ({ type, ...params }) => {
     switch (type) {
+      case 'TABLE_STARTUP':
+        initTable(socket);
+        break;
       case 'HAND_STARTUP':
         initPlayer(socket);
         break;
