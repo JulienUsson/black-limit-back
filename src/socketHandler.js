@@ -1,7 +1,7 @@
 import UUID from 'uuid-js';
 
 import { setPlayers, gameReady, setQuestion } from './Actions/TableActions';
-import { setUuid, setUsername, setHand } from './Actions/HandActions';
+import { setUuid, setUsername, setHand, resetPlayer } from './Actions/HandActions';
 import { createQuestionDeck, createAnswerDeck } from './cards';
 
 const MIN_PLAYERS = 2;
@@ -13,11 +13,26 @@ let players = [];
 let gameStarted = false;
 let question = null;
 
+function resetGame(socket) {
+  questionDeck = null;
+  answerDeck = null;
+  gameStarted = false;
+  question = null;
+  players = players.map(p => ({ ...p, ready: false }));
+  players.forEach(p => p.socket.emit('dispatch', resetPlayer()));
+  socket.broadcast.emit('dispatch', setPlayers(players));
+  socket.broadcast.emit('dispatch', setQuestion(question));
+}
+
 function disconnect(socket) {
   const { uuid } = socket;
   if (uuid) {
     players = players.filter(p => p.uuid !== uuid);
     socket.broadcast.emit('dispatch', setPlayers(players));
+  }
+
+  if (players.length < 2) {
+    resetGame(socket);
   }
 }
 

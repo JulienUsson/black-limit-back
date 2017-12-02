@@ -12,3 +12,7 @@ export const setHand = hand => ({
   type: 'HAND_SET_HAND',
   hand,
 });
+
+export const resetPlayer = () => ({
+  type: 'HAND_RESET',
+});
