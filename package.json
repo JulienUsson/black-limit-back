@@ -1,9 +1,9 @@
 {
-  "name": "rpi-poker-table-back",
-  "version": "1.0.0",
+  "name": "black-limit",
+  "version": "0.0.1",
   "main": "src/index.js",
   "author": "Julien Usson",
-  "license": "MIT",
+  "license": "GPL-3.0+",
   "dependencies": {
     "express": "^4.16.2",
     "lodash": "^4.17.4",

@@ -1,4 +1,4 @@
-# rpi-poker-table-back
+# Black Limit Back
 
-Launch project : `yarn start`
-Build project : `yarn build`
+ * Launch project : `yarn start`
+ * Build project : `yarn build`
