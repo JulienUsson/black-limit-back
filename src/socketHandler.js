@@ -2,7 +2,7 @@ import UUID from 'uuid-js';
 
 import { setPlayers, gameReady, setQuestion } from './Actions/TableActions';
 import { setUuid, setUsername, setHand } from './Actions/HandActions';
-import { createQuestionDeck, createAnswerDeck } from './Deck';
+import { createQuestionDeck, createAnswerDeck } from './cards';
 
 const MIN_PLAYERS = 2;
 const DRAW_SIZE = 5;
@@ -10,9 +10,8 @@ const DRAW_SIZE = 5;
 let questionDeck = null;
 let answerDeck = null;
 let players = [];
-let playersCount = 1;
 let gameStarted = false;
-
+let question = null;
 
 function disconnect(socket) {
   const { uuid } = socket;
@@ -27,11 +26,10 @@ function initPlayer(socket) {
     return;
   }
   const uuid = UUID.create().toString();
-  const username = `Player ${playersCount}`;
+  const username = `Player ${players.length + 1}`;
   players.push({
-    uuid, username, socket, ready: false, hand: [],
+    uuid, username, socket, ready: false, score: 0, hand: [],
   });
-  playersCount += 1;
   socket.uuid = uuid;
   socket.emit('dispatch', setUuid(uuid));
   socket.emit('dispatch', setUsername(username));
@@ -70,7 +68,8 @@ function launchGame(io) {
     const hand = answerDeck.draw(DRAW_SIZE);
     player.hand = hand;
     socket.emit('dispatch', setHand(hand));
-    socket.broadcast.emit('dispatch', setQuestion(questionDeck.draw()));
+    question = questionDeck.draw();
+    socket.broadcast.emit('dispatch', setQuestion(question));
   });
 }
 
