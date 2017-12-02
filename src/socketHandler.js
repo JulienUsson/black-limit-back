@@ -10,6 +10,7 @@ const DRAW_SIZE = 5;
 let questionDeck = null;
 let answerDeck = null;
 let players = [];
+let playersCount = 1;
 let gameStarted = false;
 let question = null;
 
@@ -34,6 +35,9 @@ function disconnect(socket) {
   if (players.length < 2) {
     resetGame(socket);
   }
+  if (players.length === 0) {
+    playersCount = 1;
+  }
 }
 
 function initTable(socket) {
@@ -46,7 +50,8 @@ function initPlayer(socket) {
     return;
   }
   const uuid = UUID.create().toString();
-  const username = `Player ${players.length + 1}`;
+  const username = `Player ${playersCount}`;
+  playersCount += 1;
   players.push({
     uuid, username, socket, ready: false, score: 0, hand: [],
   });
