@@ -14,7 +14,7 @@ let playersCount = 1;
 let gameStarted = false;
 let question = null;
 
-function resetGame(socket) {
+function resetGame(io, socket) {
   questionDeck = null;
   answerDeck = null;
   gameStarted = false;
@@ -22,10 +22,10 @@ function resetGame(socket) {
   players = players.map(p => ({ ...p, ready: false }));
   players.forEach(p => p.socket.emit('dispatch', resetPlayer()));
   socket.broadcast.emit('dispatch', setPlayers(players));
-  socket.broadcast.emit('dispatch', setQuestion(question));
+  io.sockets.emit('dispatch', setQuestion(question));
 }
 
-function disconnect(socket) {
+function disconnect(io, socket) {
   const { uuid } = socket;
   if (uuid) {
     players = players.filter(p => p.uuid !== uuid);
@@ -33,7 +33,7 @@ function disconnect(socket) {
   }
 
   if (players.length < 2) {
-    resetGame(socket);
+    resetGame(io, socket);
   }
   if (players.length === 0) {
     playersCount = 1;
@@ -94,12 +94,12 @@ function launchGame(io) {
     player.hand = hand;
     socket.emit('dispatch', setHand(hand));
     question = questionDeck.draw();
-    socket.broadcast.emit('dispatch', setQuestion(question));
+    io.sockets.emit('dispatch', setQuestion(question));
   });
 }
 
 export default io => (socket) => {
-  socket.on('disconnect', () => disconnect(socket));
+  socket.on('disconnect', () => disconnect(io, socket));
 
   socket.on('dispatch', ({ type, ...params }) => {
     switch (type) {
