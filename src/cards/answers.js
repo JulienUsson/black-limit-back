@@ -17,4 +17,4 @@ export default [
   'Laisser tomber tout le monde.',
   'IL FAUT CONSTRUIRE DES AUTOROUTES.',
   "Faire sauter l'Assemblée Nationale.",
-];
+]

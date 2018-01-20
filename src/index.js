@@ -1,16 +1,19 @@
-import Express from 'express';
-import Http from 'http';
-import SocketIO from 'socket.io';
+import Express from 'express'
+import Http from 'http'
+import SocketIO from 'socket.io'
+import dotenv from 'dotenv'
 
-import config from './config';
-import socketHandler from './socketHandler';
+import socketHandler from './socketHandler'
 
-const app = Express();
-const http = Http.Server(app);
-const io = SocketIO(http);
+dotenv.config()
 
-io.on('connection', socketHandler(io));
+const app = Express()
+const http = Http.Server(app)
+const io = SocketIO(http)
+const port = process.env.PORT
 
-http.listen(config.port, () => {
-  console.log(`listening on *:${config.port}`);
-});
+io.on('connection', socketHandler(io))
+
+http.listen(port, () => {
+  console.log(`listening on *:${port}`)
+})
