@@ -16,3 +16,8 @@ export const setQuestion = question => ({
   type: 'TABLE_SET_QUESTION',
   question,
 })
+
+export const setAnswers = answers => ({
+  type: 'TABLE_SET_ANSWERS',
+  answers,
+})

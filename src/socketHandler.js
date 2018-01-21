@@ -1,6 +1,11 @@
 import UUID from 'uuid-js'
 
-import { setPlayers, gameReady, setQuestion } from './Actions/TableActions'
+import {
+  setPlayers,
+  gameReady,
+  setQuestion,
+  setAnswers,
+} from './Actions/TableActions'
 import {
   setUuid,
   setUsername,
@@ -64,6 +69,7 @@ function initPlayer(socket) {
     ready: false,
     score: 0,
     hand: [],
+    cards: [],
   })
   socket.uuid = uuid
   socket.emit('dispatch', setUuid(uuid))
@@ -111,6 +117,8 @@ function launchGame(io) {
 function play(socket, { cards }) {
   const player = players.find(p => p.uuid === socket.uuid)
   player.cards = cards
+  player.hand = player.hand.filter(c => !cards.includes(c))
+  socket.emit('dispatch', setHand(player.hand))
 }
 
 export default io => socket => {
@@ -139,6 +147,9 @@ export default io => socket => {
         break
       case 'HAND_PLAY':
         play(socket, params)
+        if (players.every(p => p.cards.length > 0)) {
+          io.sockets.emit('dispatch', setAnswers(players.map(p => p.cards)))
+        }
         break
       default:
         break
