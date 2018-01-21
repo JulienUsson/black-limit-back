@@ -69,6 +69,7 @@ function initPlayer(socket) {
     ready: false,
     score: 0,
     hand: [],
+    hasPlay: false,
     cards: [],
   })
   socket.uuid = uuid
@@ -118,6 +119,7 @@ function play(socket, { cards }) {
   const player = players.find(p => p.uuid === socket.uuid)
   player.cards = cards
   player.hand = player.hand.filter(c => !cards.includes(c))
+  player.hasPlay = true
   socket.emit('dispatch', setHand(player.hand))
 }
 
@@ -147,6 +149,7 @@ export default io => socket => {
         break
       case 'HAND_PLAY':
         play(socket, params)
+        io.sockets.emit('dispatch', setPlayers(players))
         if (players.every(p => p.cards.length > 0)) {
           io.sockets.emit('dispatch', setAnswers(players.map(p => p.cards)))
         }

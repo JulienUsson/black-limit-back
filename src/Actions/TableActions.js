@@ -4,6 +4,7 @@ export const setPlayers = players => ({
     uuid: p.uuid,
     username: p.username,
     ready: p.ready,
+    hasPlay: p.hasPlay,
   })),
 })
 
